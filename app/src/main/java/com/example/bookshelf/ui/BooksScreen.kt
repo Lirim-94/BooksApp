@@ -1,6 +1,7 @@
 package com.example.bookshelf.ui
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,13 +21,18 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,8 +47,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.bookshelf.data.Book
 
+
+
 @Composable
 fun BookshelfScreen(viewModel: BookshelfViewModel) {
+
     val uiState by viewModel.uiState.collectAsState()
 
     Column {
@@ -55,7 +66,12 @@ fun BookshelfScreen(viewModel: BookshelfViewModel) {
                  Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = { viewModel.loadRandomBooks() }) {
+            IconButton(
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                onClick = { viewModel.loadRandomBooks() }) {
                 Icon(Icons.Default.Refresh, contentDescription = "Load Random Books")
             }
         }
@@ -75,16 +91,32 @@ fun SearchBar(onSearch: (String) -> Unit, weight: Modifier) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
             label = { Text("Search books") },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .heightIn(min = 56.dp),
+            colors =OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary
+            )
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Button(onClick = { onSearch(text) }) {
+        Button(
+            colors = ButtonDefaults.buttonColors(
+              containerColor =  MaterialTheme.colorScheme.primary,
+              contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            onClick = { onSearch(text) },
+            modifier = Modifier
+                .height(56.dp)) {
             Text("Search")
         }
     }
