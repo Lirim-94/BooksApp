@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bookshelf.data.Book
 import com.example.bookshelf.network.GoogleBooksApi
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed class BooksUiState {
     object Loading : BooksUiState()
@@ -16,7 +18,8 @@ sealed class BooksUiState {
 
 }
 
-class BookshelfViewModel : ViewModel() {
+@HiltViewModel
+class BookshelfViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState.asStateFlow()
 
