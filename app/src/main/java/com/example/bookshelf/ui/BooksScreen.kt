@@ -97,7 +97,7 @@ fun BookshelfScreenMedium(viewModel: BookshelfViewModel) {
 
     Column {
         SearchBar(
-            onSearch = { query -> viewModel.searchBooks(query)},
+            onSearch = { query -> viewModel.searchBooks(query) },
             weight = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -122,7 +122,7 @@ fun BookshelfScreenExpanded(viewModel: BookshelfViewModel) {
                 .padding(16.dp)
         )
         BookGrid(
-            viewModel = viewModel ,
+            viewModel = viewModel,
             columns = GridCells.Fixed(4),
             modifier = Modifier.fillMaxSize()
         )

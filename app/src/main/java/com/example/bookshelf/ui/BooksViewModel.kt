@@ -39,18 +39,22 @@ class BookshelfViewModel @Inject constructor() : ViewModel() {
     }
 
     fun searchBooks(query: String) {
-        viewModelScope.launch {
-            _uiState.value = BooksUiState.Loading
-            val result = GoogleBooksApi.searchBooks(query)
-            _uiState.value = result.fold(
-                onSuccess = { BooksUiState.Success(it) },
-                onFailure = { BooksUiState.Error(it.message ?: "Unknown error occurred") }
-            )
+        if (query.isBlank()) {
+            loadRandomBooks()
+        } else {
+            viewModelScope.launch {
+                _uiState.value = BooksUiState.Loading
+                val result = GoogleBooksApi.searchBooks(query)
+                _uiState.value = result.fold(
+                    onSuccess = { BooksUiState.Success(it) },
+                    onFailure = { BooksUiState.Error(it.message ?: "Unknown error occurred") }
+                )
+            }
         }
     }
 
     private fun getRandomSearchTerm(): String {
-        val terms = listOf("fiction", "science", "history", "art", "technology", "philosophy")
+        val terms = listOf("fiction", "science", "history", "art", "technology", "philosophy", "cake", "sports", "food", "motivation", "peace")
         return terms.random()
     }
 }
