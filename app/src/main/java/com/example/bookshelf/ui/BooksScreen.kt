@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,7 +36,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -121,6 +133,8 @@ fun BookshelfScreenExpanded(viewModel: BookshelfViewModel) {
 @Composable
 fun SearchBar(onSearch: (String) -> Unit, weight: Modifier) {
     var text by remember { mutableStateOf("") }
+    val viewModel: BookshelfViewModel = hiltViewModel()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
         modifier = Modifier
@@ -132,9 +146,29 @@ fun SearchBar(onSearch: (String) -> Unit, weight: Modifier) {
             value = text,
             onValueChange = { text = it },
             label = { Text("Search books") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = { viewModel.searchBooks(text)
+                    if (keyboardController != null) {
+                        keyboardController.hide()
+                    }
+                }
+            ),
+
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 56.dp),
+                .heightIn(min = 56.dp)
+                .onPreviewKeyEvent {
+                            if (it.key == Key.Enter) {
+                                viewModel.searchBooks(text)
+                                if (keyboardController != null) {
+                                    keyboardController.hide()
+                                }
+                                true
+                            } else {
+                                false }
+                            }
+                ,
             colors =OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline,
@@ -148,7 +182,12 @@ fun SearchBar(onSearch: (String) -> Unit, weight: Modifier) {
               containerColor =  MaterialTheme.colorScheme.primary,
               contentColor = MaterialTheme.colorScheme.onPrimary
             ),
-            onClick = { onSearch(text) },
+            onClick = {
+                onSearch(text)
+                if (keyboardController != null) {
+                    keyboardController.hide()
+                }
+                      },
             modifier = Modifier
                 .height(56.dp)) {
             Text("Search")
