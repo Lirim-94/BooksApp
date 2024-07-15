@@ -8,6 +8,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -37,7 +38,8 @@ object GoogleBooksApi {
                             title = info.title,
                             authors = info.authors ?: emptyList(),
                             coverImageUrl = info.imageLinks?.thumbnail?.replace("http:", "https:")
-                                            ?: info.imageLinks?.smallThumbnail?.replace("http:", "https:")
+                                            ?: info.imageLinks?.smallThumbnail?.replace("http:", "https:"),
+                            description = info.description
                         )
 
                     }
@@ -53,25 +55,35 @@ object GoogleBooksApi {
 
     @Serializable
     data class BooksResponse(
+        @SerialName("items")
         val items: List<VolumeItem>? = null
     )
 
     @Serializable
     data class VolumeItem(
+        @SerialName("id")
         val id: String,
+        @SerialName("volumeInfo")
         val volumeInfo: VolumeInfo?=null
     )
 
     @Serializable
     data class VolumeInfo(
+        @SerialName("title")
         val title: String,
+        @SerialName("authors")
         val authors: List<String>? = null,
-        val imageLinks: ImageLinks? = null
+        @SerialName("imageLinks")
+        val imageLinks: ImageLinks? = null,
+        @SerialName("description")
+        val description: String? = null
     )
 
     @Serializable
     data class ImageLinks(
+        @SerialName("thumbnail")
         val thumbnail: String? = null,
+        @SerialName("smallThumbnail")
         val smallThumbnail: String? = null
     )
 
