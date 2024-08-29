@@ -1,21 +1,7 @@
 package com.example.bookshelf.ui
 
-
-
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,27 +11,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,59 +28,59 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.bookshelf.data.Book
-
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 
 @Composable
 fun BookApp(
-    windowSizeClass: androidx.compose.material3.windowsizeclass.WindowSizeClass,
-    viewModel: BookshelfViewModel = hiltViewModel()) {
+    windowSizeClass: WindowSizeClass,
+    viewModel: BookshelfViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     when (windowSizeClass.widthSizeClass) {
-        androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Compact -> {
+        WindowWidthSizeClass.Compact -> {
             BookshelfScreenCompact(
                 uiState = uiState,
-                onSearchBooks = { query -> viewModel.processIntent(BookshelfIntent.SearchBooks(query))},
-                onBookSelected = { bookId -> viewModel.processIntent(BookshelfIntent.SelectBook(bookId))},
-                onBackTolist = {viewModel.processIntent(BookshelfIntent.BackToList)},
-                onScrollPositionChanged = { position -> viewModel.processIntent(BookshelfIntent.UpdateScrollPosition(position))}
-
+                onSearchBooks = { query -> viewModel.processIntent(BookshelfIntent.SearchBooks(query)) },
+                onBookSelected = { bookId -> viewModel.processIntent(BookshelfIntent.SelectBook(bookId)) },
+                onBackToList = { viewModel.processIntent(BookshelfIntent.BackToList) },
+                onScrollPositionChanged = { position -> viewModel.processIntent(BookshelfIntent.UpdateScrollPosition(position)) }
             )
         }
-        androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Medium -> {
+        WindowWidthSizeClass.Medium -> {
             BookshelfScreenMedium(
                 uiState = uiState,
-                onSearchBooks = { query -> viewModel.processIntent(BookshelfIntent.SearchBooks(query))},
-                onBookSelected = { bookId -> viewModel.processIntent(BookshelfIntent.SelectBook(bookId))},
-                onBackTolist = {viewModel.processIntent(BookshelfIntent.BackToList)},
-                onScrollPositionChanged = { position -> viewModel.processIntent(BookshelfIntent.UpdateScrollPosition(position))}
+                onSearchBooks = { query -> viewModel.processIntent(BookshelfIntent.SearchBooks(query)) },
+                onBookSelected = { bookId -> viewModel.processIntent(BookshelfIntent.SelectBook(bookId)) },
+                onBackToList = { viewModel.processIntent(BookshelfIntent.BackToList) },
+                onScrollPositionChanged = { position -> viewModel.processIntent(BookshelfIntent.UpdateScrollPosition(position)) }
             )
         }
-        androidx.compose.material3.windowsizeclass.WindowWidthSizeClass.Expanded -> {
+        WindowWidthSizeClass.Expanded -> {
             BookshelfScreenExpanded(
                 uiState = uiState,
-                onSearchBooks = { query -> viewModel.processIntent(BookshelfIntent.SearchBooks(query))},
-                onBookSelected = { bookId -> viewModel.processIntent(BookshelfIntent.SelectBook(bookId))},
-                onBackTolist = {viewModel.processIntent(BookshelfIntent.BackToList)},
-                onScrollPositionChanged = { position -> viewModel.processIntent(BookshelfIntent.UpdateScrollPosition(position))}
+                onSearchBooks = { query -> viewModel.processIntent(BookshelfIntent.SearchBooks(query)) },
+                onBookSelected = { bookId -> viewModel.processIntent(BookshelfIntent.SelectBook(bookId)) },
+                onBackToList = { viewModel.processIntent(BookshelfIntent.BackToList) },
+                onScrollPositionChanged = { position -> viewModel.processIntent(BookshelfIntent.UpdateScrollPosition(position)) }
             )
         }
     }
 }
 
-
 @Composable
 fun BookshelfScreenCompact(
     uiState: BooksUiState,
     onSearchBooks: (String) -> Unit,
-    onBookSelected: (String) -> Unit,
-    onBackTolist: () -> Unit,
-    onScrollPositionChanged: (Int) -> Unit,
+    onBookSelected: (Int) -> Unit,
+    onBackToList: () -> Unit,
+    onScrollPositionChanged: (Int) -> Unit
 ) {
     Column {
         SearchBar(
             onSearch = onSearchBooks,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.fillMaxWidth()
         )
         when (uiState) {
             is BooksUiState.Loading -> LoadingIndicator()
@@ -120,14 +88,14 @@ fun BookshelfScreenCompact(
                 books = uiState.books,
                 onBookSelected = onBookSelected,
                 columns = 2,
-                modifier = Modifier,
+                modifier = Modifier.weight(1f),
                 initialScrollPosition = uiState.scrollPosition,
                 onScrollPositionChanged = onScrollPositionChanged
             )
             is BooksUiState.Error -> ErrorMessage(uiState.message)
             is BooksUiState.BookDetails -> BookDetailsScreen(
                 book = uiState.book,
-                onBackPressed = onBackTolist
+                onBackPressed = onBackToList
             )
         }
     }
@@ -137,8 +105,8 @@ fun BookshelfScreenCompact(
 fun BookshelfScreenMedium(
     uiState: BooksUiState,
     onSearchBooks: (String) -> Unit,
-    onBookSelected: (String) -> Unit,
-    onBackTolist: () -> Unit,
+    onBookSelected: (Int) -> Unit,
+    onBackToList: () -> Unit,
     onScrollPositionChanged: (Int) -> Unit
 ) {
     Row {
@@ -151,7 +119,7 @@ fun BookshelfScreenMedium(
             is BooksUiState.Success -> BookGrid(
                 books = uiState.books,
                 onBookSelected = onBookSelected,
-                columns =3,
+                columns = 3,
                 modifier = Modifier.weight(2f),
                 initialScrollPosition = uiState.scrollPosition,
                 onScrollPositionChanged = onScrollPositionChanged
@@ -159,7 +127,7 @@ fun BookshelfScreenMedium(
             is BooksUiState.Error -> ErrorMessage(uiState.message)
             is BooksUiState.BookDetails -> BookDetailsScreen(
                 book = uiState.book,
-                onBackPressed = onBackTolist,
+                onBackPressed = onBackToList,
                 modifier = Modifier.weight(2f)
             )
         }
@@ -170,10 +138,9 @@ fun BookshelfScreenMedium(
 fun BookshelfScreenExpanded(
     uiState: BooksUiState,
     onSearchBooks: (String) -> Unit,
-    onBookSelected: (String) -> Unit,
-    onBackTolist: () -> Unit,
+    onBookSelected: (Int) -> Unit,
+    onBackToList: () -> Unit,
     onScrollPositionChanged: (Int) -> Unit
-
 ) {
     Column {
         SearchBar(
@@ -186,14 +153,14 @@ fun BookshelfScreenExpanded(
                 books = uiState.books,
                 onBookSelected = onBookSelected,
                 columns = 4,
-                modifier = Modifier,
+                modifier = Modifier.weight(1f),
                 initialScrollPosition = uiState.scrollPosition,
                 onScrollPositionChanged = onScrollPositionChanged
             )
             is BooksUiState.Error -> ErrorMessage(uiState.message)
             is BooksUiState.BookDetails -> BookDetailsScreen(
                 book = uiState.book,
-                onBackPressed = onBackTolist
+                onBackPressed = onBackToList
             )
         }
     }
@@ -236,7 +203,7 @@ fun BookDetailsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = book.authors.joinToString(),
+                    text = book.author,
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -272,14 +239,17 @@ fun BookDetailsScreen(
         }
     }
 }
+
 @Composable
-fun SearchBar(onSearch: (String) -> Unit, modifier: Modifier) {
-    var text by remember { mutableStateOf("") }
-    val viewModel: BookshelfViewModel = hiltViewModel()
+fun SearchBar(
+    onSearch: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var text by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -290,29 +260,24 @@ fun SearchBar(onSearch: (String) -> Unit, modifier: Modifier) {
             label = { Text("Search books") },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
-                onSearch = { viewModel.searchBooks(text)
-                    if (keyboardController != null) {
-                        keyboardController.hide()
-                    }
+                onSearch = {
+                    onSearch(text)
+                    keyboardController?.hide()
                 }
             ),
-
             modifier = Modifier
                 .weight(1f)
                 .heightIn(min = 56.dp)
                 .onPreviewKeyEvent {
                     if (it.key == Key.Enter) {
-                        viewModel.searchBooks(text)
-                        if (keyboardController != null) {
-                            keyboardController.hide()
-                        }
+                        onSearch(text)
+                        keyboardController?.hide()
                         true
                     } else {
                         false
                     }
-                }
-                ,
-            colors =OutlinedTextFieldDefaults.colors(
+                },
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 focusedLabelColor = MaterialTheme.colorScheme.primary,
@@ -321,18 +286,12 @@ fun SearchBar(onSearch: (String) -> Unit, modifier: Modifier) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Button(
-            colors = ButtonDefaults.buttonColors(
-              containerColor =  MaterialTheme.colorScheme.primary,
-              contentColor = MaterialTheme.colorScheme.onPrimary
-            ),
             onClick = {
                 onSearch(text)
-                if (keyboardController != null) {
-                    keyboardController.hide()
-                }
-                      },
-            modifier = Modifier
-                .height(56.dp)) {
+                keyboardController?.hide()
+            },
+            modifier = Modifier.height(56.dp)
+        ) {
             Text("Search")
         }
     }
@@ -348,33 +307,31 @@ fun LoadingIndicator() {
 @Composable
 fun BookGrid(
     books: List<Book>,
-    onBookSelected: (String) -> Unit,
+    onBookSelected: (Int) -> Unit,
     columns: Int,
     initialScrollPosition: Int = 0,
     onScrollPositionChanged: (Int) -> Unit,
-    modifier: Modifier) {
-
+    modifier: Modifier = Modifier
+) {
     val gridState = rememberLazyGridState(
         initialFirstVisibleItemIndex = initialScrollPosition
     )
 
     LaunchedEffect(gridState) {
         snapshotFlow { gridState.firstVisibleItemIndex }
-            .collect {onScrollPositionChanged(it)}
-
+            .collect { onScrollPositionChanged(it) }
     }
+
     LazyVerticalGrid(
         state = gridState,
-        modifier = modifier,
         columns = GridCells.Fixed(columns),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(16.dp),
+        modifier = modifier
     ) {
         items(books) { book ->
             BookCard(
                 book = book,
-                onClick = {
-                    onBookSelected(book.id)
-                }
+                onClick = { book.id?.let { onBookSelected(it) } }
             )
         }
     }
@@ -388,13 +345,13 @@ fun ErrorMessage(message: String) {
 }
 
 @Composable
-fun BookCard(book: Book, onClick: () -> Unit ) {
+fun BookCard(book: Book, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .clickable(onClick = onClick)
             .padding(8.dp)
             .fillMaxWidth()
-            .aspectRatio(0.67f) // maintain aspect ratio for different screen sizes
+            .aspectRatio(0.67f)
     ) {
         Column {
             AsyncImage(
@@ -402,7 +359,7 @@ fun BookCard(book: Book, onClick: () -> Unit ) {
                 contentDescription = book.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f), //take up available space
+                    .weight(1f),
                 contentScale = ContentScale.Crop,
             )
             Text(
